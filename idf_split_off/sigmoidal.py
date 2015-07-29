@@ -1,6 +1,8 @@
 from __future__ import division
 from math import exp, log
 
+import numbers
+
 from settings import SIGMOID
 
 class Sigmoidal:
@@ -21,6 +23,9 @@ class Sigmoidal:
     def _get_weight(self, idf_value):
         return self.lower_bound + (1 - self.lower_bound) / (1 + exp(-(self.strength * idf_value - self.shift)))
 
-    @classmethod
     def split_idf(self, idf_value):
-        return idf_value * self._get_weight()
+        try:
+            if isinstance(idf_value, numbers.Number):
+                return idf_value * self._get_weight(idf_value)
+        except:
+            raise BaseException
