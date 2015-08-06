@@ -3,7 +3,7 @@ from math import exp, log
 
 import numbers
 
-from settings import SIGMOID
+PRECISION_BASE = 1000
 
 class Sigmoidal:
     """
@@ -12,13 +12,16 @@ class Sigmoidal:
       value of your database
     """
 
-    def __init__(self):
-        self.strength = SIGMOID.get('strength')
-        self.lower_bound = SIGMOID.get('lower_bound')
-        self.shift = self._get_shift()
+    def __init__(self, max_value, range, lower_bound=0.2):
+        self.lower_bound = lower_bound
+        self.shift = self._get_shift(range)
+        self.strength = self._get_strength(range, max_value)
+    
+    def _get_strength(self, range, max_value):
+        return (2 * log(PRECISION_BASE)) / ((1 - 2*range) * max_value)
 
-    def _get_shift(self):
-        return log(1 / SIGMOID.get('shift_precision')) / self.strength
+    def _get_shift(self, range):
+        return log(PRECISION_BASE) * ( 1 + ( 1 / ( 1 - 2 * range ) ) )
 
     def _get_weight(self, idf_value):
         return self.lower_bound + (1 - self.lower_bound) / (1 + exp(-(self.strength * idf_value - self.shift)))
